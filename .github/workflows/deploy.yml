@@ -21,6 +21,8 @@ jobs:
             10.x
           cache: true
       - name: Download chdb libraries for all platforms
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           for platform in linux-x86_64 linux-aarch64 macos-x86_64 macos-arm64; do
             ./update_libchdb.sh "" "$platform"

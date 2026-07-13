@@ -28,12 +28,23 @@ determine_platform() {
 # tarball for the requested platform.
 REPO="chdb-io/chdb-core"
 
+# unauthenticated github api requests are rate-limited (fails on shared CI runner
+# IPs), so authenticate with GITHUB_TOKEN when available
+CURL_AUTH=()
+if [ -n "$GITHUB_TOKEN" ]; then
+    CURL_AUTH=(--header "Authorization: Bearer $GITHUB_TOKEN")
+fi
+
 determine_latest_release() {
-    local tags tag url
-    tags=$(curl --silent "https://api.github.com/repos/$REPO/releases?per_page=30" \
+    local response tags tag url
+    response=$(curl --silent "${CURL_AUTH[@]}" "https://api.github.com/repos/$REPO/releases?per_page=30")
+    tags=$(echo "$response" \
         | grep -E '"(tag_name|prerelease)":' \
         | sed -E 's/.*"tag_name": "([^"]+)".*/\1/; s/.*"prerelease": (true|false).*/\1/' \
         | paste - - | awk '$2 == "false" { print $1 }')
+    if [ -z "$tags" ]; then
+        echo "Could not list releases of $REPO (rate limited?): $response" >&2
+    fi
     for tag in $tags; do
         url="https://github.com/$REPO/releases/download/$tag/$PLATFORM-libchdb.tar.gz"
         if [ "$(curl --silent --head --location --output /dev/null --write-out '%{http_code}' "$url")" = "200" ]; then
