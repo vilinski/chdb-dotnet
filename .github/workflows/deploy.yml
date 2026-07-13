@@ -6,6 +6,8 @@ on:
 
 jobs:
   deploy:
+    # do not publish from forks
+    if: github.repository == 'chdb-io/chdb-dotnet'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -34,8 +36,10 @@ jobs:
           for rid in linux-x64 linux-arm64 osx-x64 osx-arm64; do
             dotnet pack src/chdb-runtime/chdb-runtime.csproj --configuration Release -p:RID=$rid
           done
-          dotnet pack src/chdb-tool/chdb-tool.csproj --configuration Release --include-symbols
-      - name: Publish the package to nuget.org
-        run: dotnet nuget push nupkg/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+          # the tool depends on the chdb package just built above
+          dotnet nuget sources add -n local ./nupkg
+          PUSH_TOOL=true dotnet pack src/chdb-tool/chdb-tool.csproj --configuration Release --include-symbols
+      - name: Publish the packages to nuget.org
+        run: dotnet nuget push 'nupkg/*.nupkg' --skip-duplicate -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
