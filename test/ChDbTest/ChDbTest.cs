@@ -10,7 +10,7 @@ public class ChDbTest
         Assert.IsNotNull(result);
         Assert.AreEqual(1UL, result.RowsRead);
         Assert.AreEqual(48UL, result.BytesRead);
-        Assert.AreEqual("25.8.2.1\n", result.Text);
+        Assert.AreEqual("26.5.1.1\n", result.Text);
         Assert.IsNull(result.ErrorMessage);
         Assert.AreNotEqual(TimeSpan.Zero, result.Elapsed);
     }
@@ -106,7 +106,7 @@ public class ChDbTest
         var result = ChDb.Query("DESCRIBE s3('https://datasets-documentation.s3.eu-west-3.amazonaws.com/house_parquet/house_0.parquet')");
         Assert.IsNotNull(result);
         Assert.IsNull(result.ErrorMessage);
-        StringAssert.StartsWith(result.Text, "price\tNullable(Int64)");
+        StringAssert.StartsWith(result.Text, "price\tInt64");
     }
 
     [TestMethod]

@@ -94,13 +94,15 @@ chdb "select * from system.formats where is_output = 1" PrettyCompact
 # Build
 
 ```bash
+# downloads the library of the host platform into lib/<platform>/
 ./update_libchdb.sh
 # optionally specify explicit version and platform
-./update_libchdb.sh v4.0.2 linux-x86_64
-mv libchdb.so src/chdb/
+./update_libchdb.sh v26.5.0 linux-x86_64
 dotnet build -c Release
 dotnet test -c Release
-dotnet pack -c Release
+dotnet pack src/chdb/chdb.csproj -c Release
+# native packages, one per runtime identifier (expects lib/<platform>/libchdb.so)
+dotnet pack src/chdb-runtime/chdb-runtime.csproj -c Release -p:RID=linux-x64
 dotnet nuget add source ./nupkg --name chdb
 dotnet tool update -g chdb-tool
 chdb --version

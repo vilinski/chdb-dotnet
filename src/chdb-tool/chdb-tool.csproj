@@ -1,13 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <!-- <ProjectReference Include="..\chdb\chdb.csproj" Condition="'$(PUSH_TOOL)' != 'true'" /> -->
-    <!-- <PackageReference Include="chdb" Version="$(Version)" /> -->
-
-    <PackageReference Include="chdb-linux-x64" Version="$(Version)"  Condition="$(IsLinuxX64) == true"/>
-    <PackageReference Include="chdb-linux-arm64" Version="$(Version)"  Condition="$(IsLinuxArm64) == true"/>
-    <PackageReference Include="chdb-osx-x64" Version="$(Version)"  Condition="$(IsOsxX64) == true"/>
-    <PackageReference Include="chdb-osx-arm64" Version="$(Version)"  Condition="$(IsOsxArm64) == true"/>
+    <ProjectReference Include="..\chdb\chdb.csproj" Condition="'$(PUSH_TOOL)' != 'true'" />
+    <!-- when packing the tool for publishing, depend on the published chdb package;
+         the native library is resolved via its runtime.json -->
+    <PackageReference Include="chdb" Version="$(Version)" Condition="'$(PUSH_TOOL)' == 'true'" />
   </ItemGroup>
 
   <PropertyGroup>

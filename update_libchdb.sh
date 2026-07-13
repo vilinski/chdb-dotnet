@@ -23,13 +23,19 @@ determine_platform() {
     esac
 }
 
-# Newer chdb releases may ship only python wheels, so pick the latest release
-# which contains the libchdb tarball for the requested platform.
+# libchdb binaries are built in chdb-io/chdb-core and versioned after ClickHouse.
+# Pick the latest stable (non-prerelease) release which contains the libchdb
+# tarball for the requested platform.
+REPO="chdb-io/chdb-core"
+
 determine_latest_release() {
     local tags tag url
-    tags=$(curl --silent "https://api.github.com/repos/chdb-io/chdb/releases?per_page=30" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    tags=$(curl --silent "https://api.github.com/repos/$REPO/releases?per_page=30" \
+        | grep -E '"(tag_name|prerelease)":' \
+        | sed -E 's/.*"tag_name": "([^"]+)".*/\1/; s/.*"prerelease": (true|false).*/\1/' \
+        | paste - - | awk '$2 == "false" { print $1 }')
     for tag in $tags; do
-        url="https://github.com/chdb-io/chdb/releases/download/$tag/$PLATFORM-libchdb.tar.gz"
+        url="https://github.com/$REPO/releases/download/$tag/$PLATFORM-libchdb.tar.gz"
         if [ "$(curl --silent --head --location --output /dev/null --write-out '%{http_code}' "$url")" = "200" ]; then
             echo "$tag"
             return
@@ -55,12 +61,15 @@ else
     fi
 fi
 
-# Download the file, untar and cleanup
-DOWNLOAD_URL="https://github.com/chdb-io/chdb/releases/download/$RELEASE/$PLATFORM-libchdb.tar.gz"
+# Download the file, untar into lib/<platform> and cleanup
+DOWNLOAD_URL="https://github.com/$REPO/releases/download/$RELEASE/$PLATFORM-libchdb.tar.gz"
 echo "Downloading $PLATFORM-libchdb.tar.gz from $DOWNLOAD_URL"
 curl -L -o libchdb.tar.gz "$DOWNLOAD_URL"
 tar -xzf libchdb.tar.gz
-chmod +x libchdb.so
+mkdir -p "lib/$PLATFORM"
+mv libchdb.so "lib/$PLATFORM/libchdb.so"
+chmod +x "lib/$PLATFORM/libchdb.so"
 # refresh mtime, otherwise CopyToOutputDirectory=PreserveNewest may keep a stale copy
-touch libchdb.so
+touch "lib/$PLATFORM/libchdb.so"
 rm -f libchdb.tar.gz
+echo "Extracted to lib/$PLATFORM/libchdb.so"

@@ -66,9 +66,7 @@ jobs:
 
     - name: Build
       run: |
-        # copy to the correct location
-        cp libchdb.so src/chdb/libchdb.so
-        ls -lahS src/chdb/libchdb*
+        ls -lahS lib/*/libchdb.so
         dotnet build --no-restore --configuration Release
 
     - name: Test
@@ -113,24 +111,22 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - name: Download chdb library
-      run: ./update_libchdb.sh
-
-    # - name: Upload libchdb Artifact
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: libchdb
-    #     path: libchdb.so
-
     - name: Pack
       run: |
-        cp libchdb.so src/chdb/libchdb.so
-        ls -lahS src/chdb/libchdb*
+        for platform in linux-x86_64 linux-aarch64 macos-x86_64 macos-arm64; do
+          ./update_libchdb.sh "" "$platform"
+        done
         dotnet pack src/chdb/chdb.csproj -c Release --include-symbols
+        for rid in linux-x64 linux-arm64 osx-x64 osx-arm64; do
+          dotnet pack src/chdb-runtime/chdb-runtime.csproj -c Release -p:RID=$rid
+        done
         ls -lahS nupkg
 
-    - name: Publish the package to nuget.org
-      run: dotnet nuget push nupkg/chdb.*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_AUTH_TOKEN_CHDB }}
+    - name: Publish the packages to nuget.org
+      run: |
+        dotnet nuget push 'nupkg/chdb.*.nupkg' --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_AUTH_TOKEN_CHDB }}
+        dotnet nuget push 'nupkg/chdb-linux-*.nupkg' --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_AUTH_TOKEN_CHDB }}
+        dotnet nuget push 'nupkg/chdb-osx-*.nupkg' --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_AUTH_TOKEN_CHDB }}
 
 
   push_tool:
@@ -148,10 +144,7 @@ jobs:
 
       - name: Pack
         run: |
-          ls -lahS .
-          ls -lahS src/chdb/*
-          cp libchdb.so src/chdb/
-          ls -lahS src/chdb/libchdb*
+          ls -lahS lib/*/libchdb.so
           dotnet nuget sources add -n chdb ./nupkg
           dotnet pack src/chdb-tool/chdb-tool.csproj -c Release --include-symbols
           ls -lahS nupkg
@@ -161,9 +154,8 @@ jobs:
 
       - name: Test chdb-tool
         run: |
-          ./update_libchdb.sh
           dotnet tool install --add-source ./nupkg --global chdb-tool
           which chdb
-          cp libchdb.so /home/runner/.dotnet/tools/
+          cp lib/linux-x86_64/libchdb.so /home/runner/.dotnet/tools/
           chdb --help
           chdb "select version()" PrettyCompact
