@@ -39,10 +39,10 @@ jobs:
       run: |
         echo 'Reason: ${{ github.event.inputs.reason }}'
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
           8.0.x
@@ -75,7 +75,7 @@ jobs:
       run: dotnet test -c Release /p:TestTfmsInParallel=false --logger "console;verbosity=detailed" --no-build --logger trx --results-directory "TestResults-${{ matrix.rid }}"
 
     # - name: Upload dotnet test results
-    #   uses: actions/upload-artifact@v4
+    #   uses: actions/upload-artifact@v7
     #   with:
     #     name: dotnet-results-${{ matrix.rid }}
     #     path: TestResults-${{ matrix.rid }}
@@ -99,7 +99,7 @@ jobs:
 
     # - name: Upload nupkg
     #   #run: ls -l nupkg/*.nupkg
-    #   uses: actions/upload-artifact@v4
+    #   uses: actions/upload-artifact@v7
     #   with:
     #     name: dotnet-nupkg-${{ matrix.rid }}
     #     path: nupkg
@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Pack
       env:
@@ -141,7 +141,7 @@ jobs:
     env:
       PUSH_TOOL: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Download chdb library
         run: ./update_libchdb.sh
