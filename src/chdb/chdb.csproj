@@ -22,5 +22,6 @@
     <None Condition="$(RID) == 'linux-x64'"   Include="../../lib/linux-x86_64/libchdb.so"  Pack="true" PackagePath="runtimes/$(RID)/native/"   CopyToOutputDirectory="PreserveNewest" />
     <None Condition="$(RID) == 'osx-x64'"     Include="../../lib/macos-x86_64/libchdb.so"  Pack="true" PackagePath="runtimes/$(RID)/native/"   CopyToOutputDirectory="PreserveNewest" />
     <None Condition="$(RID) == 'linux-arm64'" Include="../../lib/linux-aarch64/libchdb.so" Pack="true" PackagePath="runtimes/$(RID)/native/" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="libchdb.so" Pack="true" PackagePath="runtimes/$(RID)/native/" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -5,7 +5,8 @@
 
 libchdb.tar.gz
 chdb.h
-lib/**/*.so
+chdb.hpp
+**/*.so
 nupkg/
 
 # dotenv files
