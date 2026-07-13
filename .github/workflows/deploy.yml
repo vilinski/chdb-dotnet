@@ -13,12 +13,12 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-      - name: Setup .NET Core 8.x
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            6.x
             8.x
+            10.x
           cache: true
       - name: Download chdb libraries for all platforms
         run: |
