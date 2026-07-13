@@ -8,9 +8,11 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
+    <!-- platform-specific tool packages, one per RID with libchdb.so bundled -->
+    <RuntimeIdentifiers>linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
     <ToolCommandName>chdb</ToolCommandName>
     <PackageId>chdb-tool</PackageId>
     <!-- <PackageId Condition="$(IsLinuxX64) == true">chdb-tool-linux-x64</PackageId>

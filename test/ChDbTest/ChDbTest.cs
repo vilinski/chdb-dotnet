@@ -18,7 +18,7 @@ public class ChDbTest
     [TestMethod]
     public void QueryErrorTest()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => ChDb.Query(null!));
+        Assert.ThrowsExactly<ArgumentNullException>(() => ChDb.Query(null!));
         // TODO behavior changed in 1.2.1
         var r1 = ChDb.Query("wrong_query");
         Assert.IsNotNull(r1);

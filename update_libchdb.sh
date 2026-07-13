@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 determine_platform() {
     case "$(uname -s)" in

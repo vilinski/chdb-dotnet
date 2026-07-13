@@ -9,6 +9,9 @@ chdb.hpp
 **/*.so
 nupkg/
 
+# claude code worktrees
+.claude/
+
 # dotenv files
 .env
 

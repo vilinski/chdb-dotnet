@@ -56,9 +56,6 @@ jobs:
         dotnet-version: |
           8.0.x
           10.0.x
-        source-url: https://nuget.pkg.github.com/vilinski/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Display dotnet version
       run: |
         dotnet --version

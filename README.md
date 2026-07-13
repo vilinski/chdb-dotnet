@@ -31,7 +31,7 @@ using ChDb;
 
 var result = ChDb.Query("select version()");
 Console.WriteLine(result.Text);
-// 23.10.1.1
+// 26.5.1.1
 var s = new Session();
 var result = s.Query("select * from system.formats where is_output = 1", "PrettyCompact");
 // ┌─name───────────────────────────────────────┬─is_input─┬─is_output─┬─supports_parallel_parsing─┬─supports_parallel_formatting─┐
@@ -52,7 +52,7 @@ or use it right in F# interactive with `dotnet fsi`:
 
 open ChDb
 
-// print out result in the PrettyCompact format by default
+// print out result in the TabSeparated format by default
 let result = ChDb.Query "select version()"
 printfn "%s" result.Text
 // or save result to a text or binary file in any supported format
@@ -70,7 +70,7 @@ Probably you better served using the clickhouse client and run `clickhouse local
 
 ### Installation
 
-Requires .NET SDK 6.0 or later.
+Requires .NET SDK 10.0 or later.
 
 ```bash
 dotnet tool install --global chdb-tool
