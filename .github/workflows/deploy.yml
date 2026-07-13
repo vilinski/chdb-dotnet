@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       packages: write
       contents: read
@@ -19,7 +20,6 @@ jobs:
           dotnet-version: |
             8.x
             10.x
-          cache: true
       - name: Download chdb libraries for all platforms
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

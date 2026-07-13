@@ -7,6 +7,14 @@ env:
   DOTNET_NOLOGO: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
+permissions:
+  contents: read
+
+# supersede running builds of the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ "main" ]
@@ -23,14 +31,15 @@ jobs:
   build_chdb:
     name: Build chdb-${{ matrix.rid }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       matrix:
        include:
+         # macos runners are arm64 since macos-14, so there is no runner to
+         # actually test osx-x64 anymore - it is only packed, not tested
          - os: ubuntu-latest
            rid: linux-x64
          - os: macos-latest
-           rid: osx-x64
-         - os: macos-14
            rid: osx-arm64
 
     steps:
@@ -109,6 +118,7 @@ jobs:
     name: Push chdb
     needs: build_chdb
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
 
     - uses: actions/checkout@v7
@@ -138,6 +148,7 @@ jobs:
     name: Push chdb-tool
     needs: push_chdb
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       PUSH_TOOL: true
     steps:
